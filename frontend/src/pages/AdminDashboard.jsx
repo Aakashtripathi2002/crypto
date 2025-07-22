@@ -71,11 +71,11 @@ export default function AdminDashboard() {
 
           {/* Profile & Logout */}
           <div className="flex items-center gap-4 ml-4">
-            <img
+            {/* <img
               src="/profile-icon.png" // Replace with profile image
               alt="Profile"
               className="w-8 h-8 rounded-full"
-            />
+            /> */}
             <button
               onClick={handleLogout}
               className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
