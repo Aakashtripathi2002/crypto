@@ -18,11 +18,14 @@ export default function AdminSidebar({ setActivePage, activePage }) {
       {/* Logo */}
       <div className="flex items-center justify-between px-4 py-5 border-b border-gray-200">
         {!collapsed && (
-          <img
-            src="/logoipsum.svg" // Replace with your logo path
-            alt="Logo"
-            className="h-6"
-          />
+           <div className="flex items-center">
+        <div className="flex items-center space-x-2">
+          <div className="w-6 h-6 bg-purple-600 rounded flex items-center justify-center">
+            <span className="text-white text-xs font-bold">L</span>
+          </div>
+          <span className="text-gray-700 font-semibold text-sm">Logoipsum</span>
+        </div>
+      </div>
         )}
         <button
           onClick={isMobile ? toggleMobileSidebar : toggleSidebar}

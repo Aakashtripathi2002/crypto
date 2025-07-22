@@ -1,19 +1,19 @@
 import express from "express";
 import http from "http";
-import { Server } from "socket.io";
-import connectDB from "./config/db.js";
 import cors from "cors";
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
+import connectDB from "./config/db.js";
 import cryptoRoutes from "./routes/cryptoRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
-import CryptoAsset from "./models/CryptoAsset.js";
+import { initSocket } from "./utils/socket.js";
+import { generatePrices } from "./utils/priceGenerator.js";
 
 dotenv.config();
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server, { cors: { origin: "*" } });
+const io = initSocket(server); // Initialize socket here
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -30,33 +30,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api/auth", authRoutes);
 app.use("/api/crypto", cryptoRoutes);
 
-// Socket.IO Events
-io.on("connection", (socket) => {
-  // console.log(`Client connected: ${socket.id}`);
-
-  socket.on("disconnect", () => {
-    console.log(`Client disconnected: ${socket.id}`);
-  });
-});
-
-// Price update logic
-const generatePrices = async () => {
-  try {
-    const assets = await CryptoAsset.find();
-    const updatedAssets = await Promise.all(
-      assets.map(async (asset) => {
-        const randomPrice = (
-          Math.random() * (asset.max_price - asset.min_price) + asset.min_price
-        ).toFixed(2);
-        asset.current_price = parseFloat(randomPrice);
-        return asset.save();
-      })
-    );
-    io.emit("priceUpdate", updatedAssets);
-  } catch (error) {
-    console.error("Error updating prices:", error.message);
-  }
-};
+// Price update every 10 seconds
 setInterval(generatePrices, 10000);
 
 // Handle unhandled promise rejections

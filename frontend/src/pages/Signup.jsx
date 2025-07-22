@@ -1,23 +1,30 @@
 import { useState } from "react";
-import { FaEye, FaEyeSlash, FaUser, FaLock, FaUserShield } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaUser, FaLock, FaUserShield, FaEnvelope } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import API from "../utils/api";
+import toast from "react-hot-toast";
 
 export default function Signup() {
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("user");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSignup = async (e) => {
     e.preventDefault();
+    setLoading(true);
+
     try {
-      await API.post("/auth/signup", { username, password, role });
-      alert("Signup successful");
-      navigate("/login");
+      await API.post("/auth/signup", { username, email, password, role });
+      toast.success("Signup successful! Redirecting to login...");
+      setTimeout(() => navigate("/login"), 1000);
     } catch (err) {
-      alert("Signup failed");
+      toast.error("Signup failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -42,9 +49,7 @@ export default function Signup() {
             
             {/* Username Input */}
             <div className="relative">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Username
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Username</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <FaUser className="h-5 w-5 text-gray-400" />
@@ -60,11 +65,27 @@ export default function Signup() {
               </div>
             </div>
 
+            {/* Email Input */}
+            <div className="relative">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <FaEnvelope className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  type="email"
+                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200 placeholder-gray-400"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+
             {/* Password Input */}
             <div className="relative">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Password
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <FaLock className="h-5 w-5 text-gray-400" />
@@ -93,9 +114,7 @@ export default function Signup() {
 
             {/* Role Selection */}
             <div className="relative">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Account Type
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Account Type</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <FaUserShield className="h-5 w-5 text-gray-400" />
@@ -119,9 +138,14 @@ export default function Signup() {
             {/* Signup Button */}
             <button
               type="submit"
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-200 transform hover:scale-[1.02]"
+              disabled={loading}
+              className={`w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-200 transform hover:scale-[1.02] ${loading && "opacity-70 cursor-not-allowed"}`}
             >
-              Create Account
+              {loading ? (
+                <span className="loader border-t-2 border-white rounded-full w-5 h-5 animate-spin"></span>
+              ) : (
+                "Create Account"
+              )}
             </button>
 
             {/* Divider */}

@@ -1,24 +1,32 @@
 import { useState } from "react";
-import { FaEye, FaEyeSlash, FaUser, FaLock } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaEnvelope, FaLock } from "react-icons/fa";
 import API from "../utils/api";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 export default function Login({ onLogin }) {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
+
     try {
-      const { data } = await API.post("/auth/login", { username, password });
+      const { data } = await API.post("/auth/login", { email, password });
       localStorage.setItem("token", data.token);
       localStorage.setItem("role", data.role);
-      if (onLogin) onLogin(); // Trigger re-render
+      localStorage.setItem("email", data.email); // Save email
+      toast.success("Login successful!");
+      if (onLogin) onLogin();
       navigate(data.role === "admin" ? "/admin" : "/dashboard");
     } catch (err) {
-      alert("Login failed");
+      toast.error("Login failed. Please check your credentials.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -41,21 +49,19 @@ export default function Login({ onLogin }) {
           <form onSubmit={handleLogin} className="space-y-6">
             <h2 className="text-2xl font-semibold text-gray-900 text-center mb-6">Login</h2>
             
-            {/* Username Input */}
+            {/* Email Input */}
             <div className="relative">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Username
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FaUser className="h-5 w-5 text-gray-400" />
+                  <FaEnvelope className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
-                  type="text"
+                  type="email"
                   className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder-gray-400"
-                  placeholder="Enter your username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                 />
               </div>
@@ -63,9 +69,7 @@ export default function Login({ onLogin }) {
 
             {/* Password Input */}
             <div className="relative">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Password
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <FaLock className="h-5 w-5 text-gray-400" />
@@ -95,9 +99,14 @@ export default function Login({ onLogin }) {
             {/* Login Button */}
             <button
               type="submit"
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200 transform hover:scale-[1.02]"
+              disabled={loading}
+              className={`w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200 transform hover:scale-[1.02] ${loading && "opacity-70 cursor-not-allowed"}`}
             >
-              Sign In
+              {loading ? (
+                <span className="loader border-t-2 border-white rounded-full w-5 h-5 animate-spin"></span>
+              ) : (
+                "Sign In"
+              )}
             </button>
 
             {/* Divider */}

@@ -6,8 +6,9 @@ import { io } from "socket.io-client";
 import AdminSidebar from "../components/AdminSidebar";
 import AdminTokens from "./AdminTokens";
 import AddToken from "./AddToken";
+import { BASE_URL } from "../utils/baseUrl";
 
-const socket = io("http://localhost:5000");
+const socket = io(BASE_URL);
 
 export default function AdminDashboard() {
   const [tokens, setTokens] = useState([]);
