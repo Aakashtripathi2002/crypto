@@ -99,30 +99,43 @@ const coins = [
   ];
 
 const cryptoLogos = [
-  { name: "Solana", color: "#14F195", symbol: "◎", position: "bottom-left" },
-  { name: "Binance", color: "#F3BA2F", symbol: "BNB", position: "left" },
-  { name: "Cardano", color: "#FF060A", symbol: "ADA", position: "top-left" },
-  { name: "Bitcoin", color: "#F7931A", symbol: "₿", position: "top-center" },
-  { name: "Ethereum", color: "#627EEA", symbol: "Ξ", position: "top-right" },
-  { name: "Tether", color: "#26A17B", symbol: "₮", position: "top-right-2" },
-  { name: "XRP", color: "#23292F", symbol: "✕", position: "right" },
-  { name: "Dogecoin", color: "#C2A633", symbol: "Ð", position: "bottom-right" },
+  { name: "Solana", color: "#14F195", symbol: "◎" },
+  { name: "Binance", color: "#F3BA2F", symbol: "BNB" },
+  { name: "Cardano", color: "#FF060A", symbol: "ADA" },
+  { name: "Bitcoin", color: "#F7931A", symbol: "₿" },
+  { name: "Ethereum", color: "#627EEA", symbol: "Ξ" },
+  { name: "Tether", color: "#26A17B", symbol: "₮" },
+  { name: "XRP", color: "#23292F", symbol: "✕" },
+  { name: "Dogecoin", color: "#C2A633", symbol: "Ð" },
 ];
 
+// Wider rainbow arc
+const getArcStyle = (index, total, radius = 300) => {
+  const angleStep = Math.PI / (total - 1);
+  const angle = angleStep * index;
+  const x = radius * Math.cos(angle - Math.PI);
+  const y = radius * Math.sin(angle - Math.PI);
+  return {
+    position: "absolute",
+    left: `calc(50% + ${x}px)`,
+    top: `${y + radius}px`,
+    transform: "translate(-50%, -50%)",
+  };
+};
 const getPositionClasses = (position) => {
   switch (position) {
     case "bottom-left":
-      return "absolute bottom-4 left-16 md:left-24 lg:left-32";
+      return "absolute  left-16 md:left-24 lg:left-32";
     case "left":
-      return "absolute top-1/2 left-8 md:left-12 lg:left-16 transform -translate-y-1/2";
+      return "absolute top-30 left-8 md:left-12 lg:left-16 transform -translate-y-1/2";
     case "top-left":
-      return "absolute top-8 left-32 md:left-40 lg:left-48";
+      return "absolute  bottom-90 left-80 md:left-40 lg:left-48";
     case "top-center":
-      return "absolute top-4 left-1/2 transform -translate-x-1/2";
+      return "absolute bottom-90 left-90 transform -translate-x-1/2";
     case "top-right":
-      return "absolute top-8 right-32 md:right-40 lg:right-48";
+      return "absolute bottom-90 md:right-40 lg:right-48";
     case "top-right-2":
-      return "absolute top-16 right-16 md:right-24 lg:right-32";
+      return "absolute top-18 right-16 md:right-24 lg:right-32";
     case "right":
       return "absolute top-1/2 right-8 md:right-12 lg:right-16 transform -translate-y-1/2";
     case "bottom-right":
@@ -480,61 +493,78 @@ const getPositionClasses = (position) => {
 
       {/* Crypto Logos Section */}
 <div className="bg-white py-16 relative overflow-hidden">
-  <div className="max-w-4xl mx-auto px-4 relative">
-    {/* Floating Crypto Logos in Arc Pattern */}
-    {cryptoLogos.map((crypto) => (
-      <div
-        key={crypto.name}
-        className={`w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center text-white font-bold text-xl md:text-2xl shadow-lg ${getPositionClasses(crypto.position)}`}
-        style={{ backgroundColor: crypto.color }}
-      >
-        {crypto.symbol}
-      </div>
-    ))}
+  <div className="max-w-4xl mx-auto px-4 sm:px-6 relative">
 
-    {/* Center Content */}
-    <div className="text-center relative z-10 py-12">
-      <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4 leading-tight">
-        All the chains<br />that matter in one place
-      </h2>
-      <p className="text-gray-600 text-base sm:text-lg max-w-2xl mx-auto mb-8 leading-relaxed">
-        Explore top blockchains like Bitcoin, Ethereum, Cardano, and Solana—secure, scalable,<br />and innovative networks shaping the future of crypto.
-      </p>
+    {/* Rainbow Arc Container */}
+    <div className="relative h-[340px] sm:h-[380px] lg:h-[450px] flex items-center justify-center">
+      {/* Crypto Logos */}
+      {cryptoLogos.map((crypto, i) => (
+        <div
+          key={crypto.name}
+          className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-full flex items-center justify-center text-white font-bold text-lg sm:text-xl lg:text-2xl shadow-lg absolute"
+          style={{
+            backgroundColor: crypto.color,
+            ...getArcStyle(
+              i,
+              cryptoLogos.length,
+              window.innerWidth < 640 ? 200 : window.innerWidth < 1024 ? 300 : 400 // wider radius
+            ),
+          }}
+        >
+          {crypto.symbol}
+        </div>
+      ))}
 
-      {/* App Store Buttons */}
-      <div className="flex flex-col sm:flex-row justify-center gap-3 ">
-        <a
-          href="#"
-          className="bg-gray-900 rounded-lg px-4 py-2 flex items-center space-x-2 hover:bg-gray-800 transition-colors bg-gradient-to-r from-[#A98891] to-[#9D4960]"
-        >
-          <div className="text-white ">
-            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.61 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.53,12.9 20.18,13.18L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z"/>
-            </svg>
-          </div>
-          <div className="text-left">
-            <div className="text-[10px] text-gray-400">Get it on</div>
-            <div className="text-white text-sm font-semibold">Google Play</div>
-          </div>
-        </a>
-        <a
-          href="#"
-          className="bg-gray-900 rounded-lg px-4 py-2 flex items-center space-x-2 hover:bg-gray-800 transition-colors bg-gradient-to-r from-[#A98891] to-[#9D4960]"
-        >
-          <div className="text-white">
-            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M18.71,19.5C17.88,20.74 17,21.95 15.66,21.97C14.32,22 13.89,21.18 12.37,21.18C10.84,21.18 10.37,21.95 9.1,22C7.79,22.05 6.8,20.68 5.96,19.47C4.25,17 2.94,12.45 4.7,9.39C5.57,7.87 7.13,6.91 8.82,6.88C10.1,6.86 11.32,7.75 12.11,7.75C12.89,7.75 14.37,6.68 15.92,6.84C16.57,6.87 18.39,7.1 19.56,8.82C19.47,8.88 17.39,10.1 17.41,12.63C17.44,15.65 20.06,16.66 20.09,16.67C20.06,16.74 19.67,18.11 18.71,19.5M13,3.5C13.73,2.67 14.94,2.04 15.94,2C16.07,3.17 15.6,4.35 14.9,5.19C14.21,6.04 13.07,6.7 11.95,6.61C11.8,5.46 12.36,4.26 13,3.5Z"/>
-            </svg>
-          </div>
-          <div className="text-left">
-            <div className="text-[10px] text-gray-400">Download on the</div>
-            <div className="text-white text-sm font-semibold">App Store</div>
-          </div>
-        </a>
+      {/* Center Content inside the arc */}
+      <div className="text-center relative z-10 px-4 pt-8 sm:pt-10 lg:pt-12">
+        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3 sm:mb-4 leading-tight">
+          All the chains<br />that matter in one place
+        </h2>
+        <p className="text-gray-600 text-sm sm:text-base lg:text-lg max-w-xl mx-auto mb-6 sm:mb-8 leading-relaxed">
+          Explore top blockchains like Bitcoin, Ethereum, Cardano, and Solana—secure, scalable,<br />
+          and innovative networks shaping the future of crypto.
+        </p>
+
+        {/* App Store Buttons */}
+        <div className="flex flex-col sm:flex-row justify-center gap-3">
+          {/* Google Play */}
+          <a
+            href="#"
+            className="bg-gray-900 rounded-lg px-4 py-2 flex items-center space-x-2 hover:bg-gray-800 transition-colors bg-gradient-to-r from-[#A98891] to-[#9D4960]"
+          >
+            <div className="text-white">
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.61 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.53,12.9 20.18,13.18L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z"/>
+              </svg>
+            </div>
+            <div className="text-left">
+              <div className="text-[10px] text-gray-400">Get it on</div>
+              <div className="text-white text-sm font-semibold">Google Play</div>
+            </div>
+          </a>
+
+          {/* App Store */}
+          <a
+            href="#"
+            className="bg-gray-900 rounded-lg px-4 py-2 flex items-center space-x-2 hover:bg-gray-800 transition-colors bg-gradient-to-r from-[#A98891] to-[#9D4960]"
+          >
+            <div className="text-white">
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18.71,19.5C17.88,20.74 17,21.95 15.66,21.97C14.32,22 13.89,21.18 12.37,21.18C10.84,21.18 10.37,21.95 9.1,22C7.79,22.05 6.8,20.68 5.96,19.47C4.25,17 2.94,12.45 4.7,9.39C5.57,7.87 7.13,6.91 8.82,6.88C10.1,6.86 11.32,7.75 12.11,7.75C12.89,7.75 14.37,6.68 15.92,6.84C16.57,6.87 18.39,7.1 19.56,8.82C19.47,8.88 17.39,10.1 17.41,12.63C17.44,15.65 20.06,16.66 20.09,16.67C20.06,16.74 19.67,18.11 18.71,19.5M13,3.5C13.73,2.67 14.94,2.04 15.94,2C16.07,3.17 15.6,4.35 14.9,5.19C14.21,6.04 13.07,6.7 11.95,6.61C11.8,5.46 12.36,4.26 13,3.5Z"/>
+              </svg>
+            </div>
+            <div className="text-left">
+              <div className="text-[10px] text-gray-400">Download on the</div>
+              <div className="text-white text-sm font-semibold">App Store</div>
+            </div>
+          </a>
+        </div>
       </div>
     </div>
   </div>
 </div>
+
+
 
 {/* Earn Section */}
 <div className="py-6 px-4 sm:px-6 lg:px-8">

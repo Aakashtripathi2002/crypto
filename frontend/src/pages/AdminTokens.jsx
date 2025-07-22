@@ -106,7 +106,7 @@ export default function AdminTokens() {
               filteredTokens.map((token, idx) => (
                 <tr
                   key={idx}
-                  className="border-t hover:bg-gray-50 text-gray-700 text-sm"
+                  className="border-t border-gray-200 hover:bg-gray-50 text-gray-700 text-sm"
                 >
                   <td className="px-4 py-3 flex items-center gap-2">
                     {token.icon && (

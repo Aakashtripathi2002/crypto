@@ -1,6 +1,6 @@
 import { useState } from "react";
 import API from "../utils/api";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 
 export default function AddToken() {
   const [symbol, setSymbol] = useState("");
@@ -53,7 +53,7 @@ export default function AddToken() {
 
   return (
     <div className="w-full flex justify-center items-start pt-4 sm:pt-8 bg-gray-50 overflow-hidden">
-      <Toaster position="top-right" />
+
       <div className="w-full max-w-5xl bg-white shadow-md rounded-xl p-4 sm:p-8">
         <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 mb-4 sm:mb-6 text-center">
           Create Token
